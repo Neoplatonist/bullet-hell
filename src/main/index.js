@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import MainLoop from 'mainloop.js'
 import Background from './components/background'
+import Player from './components/player'
 import './index.css'
 
 export default class Main extends Component {
@@ -44,6 +45,7 @@ export default class Main extends Component {
 
   start = () => {
     this.background = new Background(this)
+    this.player = new Player(this)
 
     // Start the main loop.
     MainLoop
@@ -55,13 +57,15 @@ export default class Main extends Component {
 
   update = delta => {
     // console.log('delta: ', delta)
-    this.background.update(delta)
+    this.background.update(delta) // we want it slower than the actual fps
+    this.player.update(delta)
   }
 
   draw = interpolationPercentage => {
     // console.log('interpolationPercentage: ', interpolationPercentage)
     // fix fps offset here
     this.background.draw(interpolationPercentage)
+    this.player.draw(interpolationPercentage)
   }
 
   end = (fps, panic) => {
