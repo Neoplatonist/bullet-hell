@@ -88,6 +88,12 @@ export default class Main extends Component {
         <canvas id="canvas"></canvas>
 
         <div id="fpscounter">0 FPS</div>
+
+        <br />
+
+        <div>
+          Use A and D keys to move the character left and right.
+        </div>
       </main>
     )
   }
