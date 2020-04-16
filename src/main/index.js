@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import MainLoop from 'mainloop.js'
 import Background from './components/background'
 import Player from './components/player'
+import Bullet from './components/bullet'
 import './index.css'
 
 export default class Main extends Component {
@@ -13,6 +14,10 @@ export default class Main extends Component {
       width: 379,
       height: 600
     }
+
+    this.activeBullets = []
+    this.bulletRateLimit = 30
+    this.createBullet = true
 
     CanvasRenderingContext2D.prototype.circle = function (x, y, r, fillStyle) {
       this.beginPath()
@@ -59,6 +64,27 @@ export default class Main extends Component {
     // console.log('delta: ', delta)
     this.background.update(delta) // we want it slower than the actual fps
     this.player.update(delta)
+
+    // abstract bullets update & create into gun class
+    if (this.createBullet) {
+      let bullet = new Bullet(this, true)
+      this.activeBullets.push(bullet)
+      this.createBullet = false
+
+      setTimeout(() => {
+        this.createBullet = true
+      }, 100)
+    }
+
+    this.activeBullets.map(bullet => {
+      if (-bullet.y >= this.canvas.height) {
+        bullet.active = false
+      } else {
+        bullet.update(delta)
+      }
+
+      return null
+    })
   }
 
   draw = interpolationPercentage => {
@@ -66,6 +92,10 @@ export default class Main extends Component {
     // fix fps offset here
     this.background.draw(interpolationPercentage)
     this.player.draw(interpolationPercentage)
+
+    // get only active bullets and draw them
+    this.activeBullets = this.activeBullets.filter(bullet => bullet.active)
+    this.activeBullets.map(bullet => bullet.draw(interpolationPercentage))
   }
 
   end = (fps, panic) => {
@@ -88,12 +118,6 @@ export default class Main extends Component {
         <canvas id="canvas"></canvas>
 
         <div id="fpscounter">0 FPS</div>
-
-        <br />
-
-        <div>
-          Use A and D keys to move the character left and right.
-        </div>
       </main>
     )
   }
